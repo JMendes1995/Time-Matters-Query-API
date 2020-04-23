@@ -7,7 +7,7 @@ from Time_Matters_Query import ArquivoPT, ArquivoPT_url
 
 def main():
     """The main function for this script."""
-    app.run(host='0.0.0.0', port='443', debug=True)
+    app.run(host='127.0.0.1', port='5000', debug=True)
     CORS(app)
 
 
@@ -71,45 +71,53 @@ def handle_time_matters_query(search_type, query, max_items=50, newspaper3k=Fals
 @app.route("/api/v1.0/arquivopt", methods=['POST'])
 @swag_from('Arquivo_pt.yml')
 def Arquivo_pt():
-    search_type ='arquivo_pt'
-    data = request.form
-
-    query = data['query']
-    max_items = data['max_items']
     try:
-        domains = data.get('domains').replace(' ', '').split(',')
-    except:
-        domains = []
-    beginDate = data.get('beginDate')
-    endDate = data.get('endDate')
-    title = data.get('title')
-    snippet = data.get('snippet')
-    fullContent = data.get('fullContent')
-    newspaper3k = data.get('newspaper3k')
-    link=data.get('link')
-    refactor_noneType = lambda s: s or ""
-    result = handle_time_matters_query(search_type, query, max_items, str2bool(newspaper3k), domains, refactor_noneType(beginDate),
-                                       refactor_noneType(endDate), str2bool(title), str2bool(snippet),
-                                       str2bool(fullContent), refactor_noneType(link))
-    return result
+        search_type ='arquivo_pt'
+        data = request.form
+
+        query = data['query']
+        max_items = data['max_items']
+        try:
+            domains = data.get('domains').replace(' ', '').split(',')
+        except:
+            domains = []
+        beginDate = data.get('beginDate')
+        endDate = data.get('endDate')
+        title = data.get('title')
+        snippet = data.get('snippet')
+        fullContent = data.get('fullContent')
+        newspaper3k = data.get('newspaper3k')
+        link=data.get('link')
+        refactor_noneType = lambda s: s or ""
+        from datetime import datetime
+        result = handle_time_matters_query(search_type, query, max_items, str2bool(newspaper3k), domains, refactor_noneType(beginDate),
+                                           refactor_noneType(endDate), str2bool(title), str2bool(snippet),
+                                           str2bool(fullContent), refactor_noneType(link))
+        return jsonify(result)
+
+    except Exception as e:
+        return jsonify({'message': str(e)})
 
 @app.route("/api/v1.0/arquivopt_url", methods=['POST'])
 @swag_from('Arquivo_pt_url.yml')
 def Arquivo_pt_url():
-    search_type = 'arquivo_pt_url'
-    data = request.form
+    try:
+        search_type = 'arquivo_pt_url'
+        data = request.form
+        url = data['url']
+        max_items = data['max_items']
+        beginDate = data.get('beginDate')
+        endDate = data.get('endDate')
+        title = data.get('title')
+        fullContent = data.get('fullContent')
+        newspaper3k = data.get('newspaper3k')
+        refactor_noneType = lambda s: s or ""
+        result = handle_time_matters_query(search_type, query=url, max_items=max_items, newspaper3k=str2bool(newspaper3k), beginDate=refactor_noneType(beginDate),
+                                           endDate=refactor_noneType(endDate), title=str2bool(title), fullContent=str2bool(fullContent))
+        return jsonify(result)
 
-    url = data['url']
-    max_items = data['max_items']
-    beginDate = data.get('beginDate')
-    endDate = data.get('endDate')
-    title = data.get('title')
-    fullContent = data.get('fullContent')
-    newspaper3k = data.get('newspaper3k')
-    refactor_noneType = lambda s: s or ""
-    result = handle_time_matters_query(search_type, query=url, max_items=max_items, newspaper3k=str2bool(newspaper3k), beginDate=refactor_noneType(beginDate),
-                                       endDate=refactor_noneType(endDate), title=str2bool(title), fullContent=str2bool(fullContent))
-    return result
+    except Exception as e:
+        return jsonify({'message': str(e)})
 
 def str2bool(v):
   return v.lower() in ("yes", "true", "t", "1")

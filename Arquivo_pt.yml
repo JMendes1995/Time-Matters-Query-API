@@ -21,12 +21,12 @@ parameters:
     in: formData
     type: string
     required: false
-    description: in the format yyyy-mm-dd
+    description: in the format YYYYMMDDHHMMSS
   - name: endDate
     in: formData
     type: string
     required: false
-    description: in the format yyyy-mm-dd
+    description: in the format YYYYMMDDHHMMSS
   - name: title
     in: formData
     type: boolean
